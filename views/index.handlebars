@@ -1,0 +1,21 @@
+<div id="BrandLogo"></div>
+<div class="content">
+    <div class="section">
+        <p>Welcome to {{brand}} {{user.given_name}}.</p>
+
+        <p>Your identity provider has issued the following tokens.</p>
+    </div>
+
+    <div class="section">
+        <h1>ID Token</h1>
+        <p>The ID token describes you as a user to this application.</p>
+        <pre>{{jwt idtoken}}</pre>
+    </div>
+
+    <div class="section">
+        <h1>Access Token</h1>
+        <p>The access token describes which resources this application has access to
+        based on your identity and the grants your have provided.</p>
+        <pre>{{jwt accesstoken}}</pre>
+    </div>
+</div>
