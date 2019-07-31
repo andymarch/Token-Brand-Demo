@@ -48,7 +48,7 @@ let oidc = new ExpressOIDC({
 app.use(oidc.router);
   
 const router = express.Router();
-router.get("/",oidc.ensureAuthenticated(), (req, res, next) => {
+router.get("/",ensureAuthenticated(), (req, res, next) => {
     res.render("index",{
         brand: process.env.BRAND,
         user: req.userContext.userinfo,
@@ -56,13 +56,19 @@ router.get("/",oidc.ensureAuthenticated(), (req, res, next) => {
         accesstoken: req.userContext.tokens.access_token
        });
 });
+app.use(router)
+
+const OktaJwtVerifier = require('@okta/jwt-verifier');
+
+const oktaJwtVerifier = new OktaJwtVerifier({
+  issuer: process.env.ISSUER,
+  clientId: process.env.CLIENT_ID,
+});
 
 app.get("/logout", (req, res) => {
     req.logout();
     res.redirect("/");
   });
-
-app.use(router)
 
 oidc.on('ready', () => {
   app.listen(PORT, () => console.log('app started'));
@@ -71,3 +77,21 @@ oidc.on('ready', () => {
 oidc.on("error", err => {
   console.error(err);
 });
+
+function ensureAuthenticated(){
+  return async (req, res, next) => {
+    if (req.isAuthenticated() && req.userContext != null) {
+      oktaJwtVerifier.verifyAccessToken(req.userContext.tokens.access_token,process.env.TOKEN_AUD)
+      .then(jwt => {
+        return next();
+      })
+      .catch(err => {
+        console.log(err)
+        res.redirect("/login")
+      });      
+    }
+    else{
+      res.redirect("/login")
+    }
+  }
+}
