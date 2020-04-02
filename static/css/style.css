@@ -1,5 +1,5 @@
 html{
-    background: #20313b;
+    background: #860394;
 }
 
 body{
@@ -23,7 +23,7 @@ html, body, .viewport {
 #BrandLogo{
     height: 200px;
     width: 400px;
-    background-image: url('/static/images/dev_logo.png');
+    background-image: url('/static/images/logo.png');
     background-repeat: no-repeat;
     background-size: contain;
 }
