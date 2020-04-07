@@ -1,6 +1,5 @@
-<div id="BrandLogo"></div>
 <div class="content">
-    <div class="section">
+    <div class="brand section">
         <p>Welcome to {{brand}} {{user.given_name}}.</p>
 
         <p>Your identity provider has issued the following tokens.</p>
@@ -17,5 +16,9 @@
         <p>The access token describes which resources this application has access to
         based on your identity and the grants your have provided.</p>
         <pre>{{jwt accesstoken}}</pre>
+    </div>
+
+    <div class="section">
+        <a href="/logout">Logout</a>
     </div>
 </div>

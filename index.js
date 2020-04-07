@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express');
-const exphbs  = require('express-handlebars');
+const hbs  = require('express-handlebars')
 const session = require("express-session");
 var createError = require('createerror');
 const ExpressOIDC = require("@okta/oidc-middleware").ExpressOIDC;
@@ -9,25 +9,30 @@ const PORT = process.env.PORT || "3000";
 
 const app = express();
 
-var hbs = exphbs.create({
-    // Specify helpers which are only registered on this instance.
-    helpers: {
+app.engine('hbs',  hbs( { 
+  extname: 'hbs', 
+  defaultLayout: 'main', 
+  layoutsDir: __dirname + '/views/layouts/',
+  partialsDir: __dirname + '/views/partials/',
+  helpers: {
+      json: function(json){
+          return JSON.stringify(json, undefined, '2');
+        },
         jwt: function (token){
             var atob = require('atob');
             if (token != null) {
                 var base64Url = token.split('.')[1];
                 var base64 = base64Url.replace('-', '+').replace('_', '/');
-                return JSON.stringify(JSON.parse(atob(base64)), undefined, '\t');
+                return JSON.stringify(JSON.parse(atob(base64)), undefined, ' ');
             } else {
                 return "Invalid or empty token was parsed"
             }
         }
-    }
-});
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
+  }
+}));
 
-app.use("/static", express.static("static"));
+app.set('view engine', 'hbs');
+app.use('/static', express.static('static'));
 
 app.use(session({
   cookie: { httpOnly: true },
@@ -65,10 +70,8 @@ const oktaJwtVerifier = new OktaJwtVerifier({
   clientId: process.env.CLIENT_ID,
 });
 
-app.get("/logout", (req, res) => {
-    req.logout();
-    res.redirect("/");
-  });
+app.get("/logout", oidc.forceLogoutAndRevoke(),(req, res) => {
+ });
 
 oidc.on('ready', () => {
   app.listen(PORT, () => console.log('app started'));
