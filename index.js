@@ -47,7 +47,7 @@ let oidc = new ExpressOIDC({
   client_secret: process.env.CLIENT_SECRET,
   appBaseUrl: process.env.BASE_URI,
   redirect_uri: process.env.REDIRECT_URI,
-  scope: 'openid profile'
+  scope: process.env.SCOPES
 });
 
 app.use(oidc.router);
