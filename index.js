@@ -4,6 +4,8 @@ const exphbs  = require('express-handlebars');
 const session = require("express-session");
 var createError = require('createerror');
 const ExpressOIDC = require("@okta/oidc-middleware").ExpressOIDC;
+const uuidv1 = require('uuid/v1');
+const axios = require('axios');
 
 const PORT = process.env.PORT || "3000";
 
@@ -56,6 +58,32 @@ router.get("/",ensureAuthenticated(), (req, res, next) => {
         accesstoken: req.userContext.tokens.access_token
        });
 });
+
+router.get("/anon", (req,res,next) => {
+  try { 
+    var authNresponse = await axios.post(process.env.TENANT_URL + 
+      '/api/v1/authn',{
+          "username": process.env.SERVICE_USER,
+          "password": process.env.SERVICE_PASSWORD
+    },{
+      'x-forwarded-for': req.headers['x-forwarded-for'] || req.connection.remoteAddress
+    })
+
+    req.session.state = uuidv1();
+    res.redirect(process.env.ISSUER + 
+      '/v1/authorize?' +
+      'client_id=' + process.env.CLIENT_ID +
+      '&sessionToken=' + authNresponse.data.sessionToken +
+      '&response_type=code' +
+      '&redirect_uri='+process.env.REDIRECT_URI + 
+      '&scope=' + process.env.SCOPES + 
+      '&state=' + req.session.state)
+  } catch(err){
+    console.log("error")
+    console.log(err)
+  }
+});
+
 app.use(router)
 
 const OktaJwtVerifier = require('@okta/jwt-verifier');
