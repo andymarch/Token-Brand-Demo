@@ -59,7 +59,7 @@ router.get("/",ensureAuthenticated(), (req, res, next) => {
        });
 });
 
-router.get("/anon", async (req,res,next) => {
+router.post("/anon", async (req,res,next) => {
   try { 
     var authNresponse = await axios.post(process.env.TENANT_URL + 
       '/api/v1/authn',{
