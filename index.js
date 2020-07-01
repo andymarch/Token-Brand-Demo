@@ -46,11 +46,16 @@ let oidc = new ExpressOIDC({
 });
 
 app.use(oidc.router);
+
+app.use(async function (req,res,next){
+  res.locals.styling = process.env.BRANDING_CSS
+  res.locals.brand = process.env.BRAND,
+  next();
+})
   
 const router = express.Router();
 router.get("/",ensureAuthenticated(), (req, res, next) => {
     res.render("index",{
-        brand: process.env.BRAND,
         user: req.userContext.userinfo,
         idtoken: req.userContext.tokens.id_token,
         accesstoken: req.userContext.tokens.access_token
