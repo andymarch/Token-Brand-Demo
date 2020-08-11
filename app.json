@@ -1,0 +1,20 @@
+{
+    "name": "Okta Token Brand Demonstration",
+    "description": "Demonstrate OAuth authorization servers with branded stub applications.",
+    "repository": "https://github.com/andymarch/Token-Brand-Demo",
+    "logo": "https://www.okta.com/sites/all/themes/Okta/images/logos/developer/Dev_Logo-02_Large.png",
+    "keywords": ["oauth", "oidc", "okta"],
+    "addons": [ "okta" ],
+    "env": {
+        "OKTA_OAUTH2_AUDIENCE": {
+          "description": "The value against which token audience is checked, using default from Okta custom Authz.",
+          "value": "api://default"
+        },
+        "SESSION_SECRET":{
+            "description": "A secret key for session data.",
+            "generator": "secret"
+        }
+    },
+    "success_url": "/"
+  }
+  
