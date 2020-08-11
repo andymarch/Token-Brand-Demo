@@ -37,11 +37,10 @@ app.use(session({
 }));
  
 let oidc = new ExpressOIDC({
-  issuer: process.env.ISSUER,
-  client_id: process.env.CLIENT_ID,
-  client_secret: process.env.CLIENT_SECRET,
+  issuer: process.env.OKTA_OAUTH2_ISSUER,
+  client_id: process.env.OKTA_OAUTH2_CLIENT_ID_WEB,
+  client_secret: process.env.OKTA_OAUTH2_CLIENT_SECRET_WEB,
   appBaseUrl: process.env.BASE_URI,
-  redirect_uri: process.env.REDIRECT_URI,
   scope: process.env.SCOPES
 });
 
@@ -66,8 +65,8 @@ app.use(router)
 const OktaJwtVerifier = require('@okta/jwt-verifier');
 
 const oktaJwtVerifier = new OktaJwtVerifier({
-  issuer: process.env.ISSUER,
-  clientId: process.env.CLIENT_ID,
+  issuer: process.env.OKTA_OAUTH2_ISSUER,
+  clientId: process.env.OKTA_OAUTH2_CLIENT_ID_WEB,
 });
 
 app.get("/logout", (req, res) => {
@@ -83,7 +82,7 @@ app.get("/logout", (req, res) => {
     const id_token_hint = tokenSet.id_token
     req.session.destroy();
     if(id_token_hint){
-      res.redirect(process.env.ISSUER+'/v1/logout?id_token_hint='
+      res.redirect(process.env.OKTA_OAUTH2_ISSUER+'/v1/logout?id_token_hint='
           + id_token_hint
           + '&post_logout_redirect_uri='
           + encodeURI(protocol+"://"+req.headers.host)

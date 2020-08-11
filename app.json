@@ -6,13 +6,25 @@
     "keywords": ["oauth", "oidc", "okta"],
     "addons": [ "okta" ],
     "env": {
-        "OKTA_OAUTH2_AUDIENCE": {
-          "description": "The value against which token audience is checked, using default from Okta custom Authz.",
-          "value": "api://default"
-        },
         "SESSION_SECRET":{
             "description": "A secret key for session data.",
             "generator": "secret"
+        },
+        "SCOPES": {
+            "description": "OAuth scopes to request on login",
+            "value": "openid profile"
+        },
+        "BASE_URI": {
+          "description": "The URI which will be used to host the application",
+          "value": "https://**yourappname**.herokuapp.com"
+        },
+        "BRAND": {
+          "description": "The brand name to show in the app.",
+          "value": "Token Brand Demonstration"
+        },
+        "BRANDING_CSS": {
+          "description": "Absolute url to branding css file.",
+          "value": ""
         }
     },
     "success_url": "/"
