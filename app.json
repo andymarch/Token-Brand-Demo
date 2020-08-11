@@ -25,7 +25,7 @@
         "BRANDING_CSS": {
           "description": "Absolute url to branding css file.",
           "value": "",
-          "required": "false"
+          "required": false
         }
     },
     "success_url": "/"
