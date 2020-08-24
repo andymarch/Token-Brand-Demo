@@ -107,7 +107,7 @@ oidc.on("error", err => {
 function ensureAuthenticated(){
   return async (req, res, next) => {
     if (req.isAuthenticated() && req.userContext != null) {
-      oktaJwtVerifier.verifyAccessToken(req.userContext.tokens.access_token,process.env.TOKEN_AUD)
+      oktaJwtVerifier.verifyAccessToken(req.userContext.tokens.access_token)
       .then(jwt => {
         return next();
       })
