@@ -65,8 +65,7 @@ app.use(router)
 const OktaJwtVerifier = require('@okta/jwt-verifier');
 
 const oktaJwtVerifier = new OktaJwtVerifier({
-  issuer: process.env.OKTA_OAUTH2_ISSUER,
-  clientId: process.env.OKTA_OAUTH2_CLIENT_ID_WEB,
+  issuer: process.env.OKTA_OAUTH2_ISSUER
 });
 
 app.get("/logout", (req, res) => {
