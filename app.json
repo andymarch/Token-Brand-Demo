@@ -26,6 +26,10 @@
           "description": "Absolute url to branding css file.",
           "value": "",
           "required": false
+        },
+        "TOKEN_AUD": {
+          "descroiption": "The AUD claim of the user token.",
+          "value": "api://default"
         }
     },
     "success_url": "/"
