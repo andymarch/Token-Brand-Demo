@@ -63,6 +63,7 @@ OKTA_OAUTH2_CLIENT_SECRET_WEB=*your-client-secret*
 SESSION_SECRET=*a random secret to protect the session*
 SCOPES=openid profile
 BASE_URI=http://localhost:3000
+TOKEN_AUD=api://default
 
 #Only needed locally
 PORT=3000
