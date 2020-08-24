@@ -28,7 +28,7 @@
           "required": false
         },
         "TOKEN_AUD": {
-          "descroiption": "The AUD claim of the user token.",
+          "description": "The AUD claim of the user token.",
           "value": "api://default"
         }
     },

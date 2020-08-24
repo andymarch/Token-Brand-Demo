@@ -65,7 +65,8 @@ app.use(router)
 const OktaJwtVerifier = require('@okta/jwt-verifier');
 
 const oktaJwtVerifier = new OktaJwtVerifier({
-  issuer: process.env.OKTA_OAUTH2_ISSUER
+  issuer: process.env.OKTA_OAUTH2_ISSUER,
+  clientId: process.env.OKTA_OAUTH2_CLIENT_ID_WEB,
 });
 
 app.get("/logout", (req, res) => {
@@ -97,7 +98,11 @@ app.get("/logout", (req, res) => {
   });
 
 oidc.on('ready', () => {
-  app.listen(PORT, () => console.log('app started'));
+  app.listen(PORT, () => console.log('App started.'+
+  ' Issuer: ' + process.env.OKTA_OAUTH2_ISSUER +
+  ' Client: ' + process.env.OKTA_OAUTH2_CLIENT_ID_WEB +
+  ' Scopes: ' + process.env.SCOPES +
+  ' Audience: ' + process.env.TOKEN_AUD));
 });
 
 oidc.on("error", err => {
@@ -107,7 +112,7 @@ oidc.on("error", err => {
 function ensureAuthenticated(){
   return async (req, res, next) => {
     if (req.isAuthenticated() && req.userContext != null) {
-      oktaJwtVerifier.verifyAccessToken(req.userContext.tokens.access_token)
+      oktaJwtVerifier.verifyAccessToken(req.userContext.tokens.access_token,process.env.TOKEN_AUD)
       .then(jwt => {
         return next();
       })
