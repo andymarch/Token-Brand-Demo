@@ -58,8 +58,8 @@ router.get("/",ensureAuthenticated(), (req, res, next) => {
         user: req.userContext.userinfo,
         idtoken: req.userContext.tokens.id_token,
         accesstoken: req.userContext.tokens.access_token,
-        customLink: process.env.customLink,
-        customLinkText: process.env.customLinkText
+        customLink: process.env.CUSTOM_LINK,
+        customLinkText: process.env.CUSTOM_LINK_TEXT
        });
 });
 app.use(router)

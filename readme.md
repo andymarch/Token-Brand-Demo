@@ -67,8 +67,8 @@ BASE_URI=http://localhost:3000
 TOKEN_AUD=api://default
 
 #OPTIONAL
-CUSTOMLINK=https://google.com
-CUSTOMLINKTEXT=Let me google that
+CUSTOM_LINK=https://google.com
+CUSTOM_LINK_TEXT=Let me google that
 
 #Only needed locally
 PORT=3000
