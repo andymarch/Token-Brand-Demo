@@ -19,6 +19,12 @@
         <pre>{{jwt accesstoken}}</pre>
     </div>
 
+    {{#if customLink}}
+    <div class="section">
+        <a href="{{customLink}}">{{customLinkText}}</a>
+    </div>
+    {{/if}}
+
     <div class="section">
         <a href="/logout">Logout</a>
     </div>

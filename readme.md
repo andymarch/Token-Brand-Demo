@@ -57,6 +57,7 @@ The following configuration sets up the application as an OIDC application with
 your IDP.
 
 ```
+#REQUIRED
 OKTA_OAUTH2_ISSUER=https://*your-tenant*.okta.com/oauth2/default
 OKTA_OAUTH2_CLIENT_ID_WEB=*your-clientid*
 OKTA_OAUTH2_CLIENT_SECRET_WEB=*your-client-secret*
@@ -64,6 +65,10 @@ SESSION_SECRET=*a random secret to protect the session*
 SCOPES=openid profile
 BASE_URI=http://localhost:3000
 TOKEN_AUD=api://default
+
+#OPTIONAL
+CUSTOMLINK=https://google.com
+CUSTOMLINKTEXT=Let me google that
 
 #Only needed locally
 PORT=3000

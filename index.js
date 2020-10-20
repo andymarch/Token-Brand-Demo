@@ -57,7 +57,9 @@ router.get("/",ensureAuthenticated(), (req, res, next) => {
     res.render("index",{
         user: req.userContext.userinfo,
         idtoken: req.userContext.tokens.id_token,
-        accesstoken: req.userContext.tokens.access_token
+        accesstoken: req.userContext.tokens.access_token,
+        customLink: process.env.customLink,
+        customLinkText: process.env.customLinkText
        });
 });
 app.use(router)
