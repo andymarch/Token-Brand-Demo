@@ -58,6 +58,7 @@ router.get("/",ensureAuthenticated(), (req, res, next) => {
         user: req.userContext.userinfo,
         idtoken: req.userContext.tokens.id_token,
         accesstoken: req.userContext.tokens.access_token,
+        refreshtoken: req.userContext.tokens.refresh_token,
         customLink: process.env.CUSTOM_LINK,
         customLinkText: process.env.CUSTOM_LINK_TEXT
        });

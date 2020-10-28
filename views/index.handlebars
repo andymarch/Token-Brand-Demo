@@ -19,6 +19,14 @@
         <pre>{{jwt accesstoken}}</pre>
     </div>
 
+    {{#if refreshtoken}}
+        <div class="section">
+        <h1>Refresh Token</h1>
+        <p>This token allows this application to get further access tokens.</p>
+        <pre>{{refreshtoken}}</pre>
+    </div>
+    {{/if}}
+
     {{#if customLink}}
     <div class="section">
         <a href="{{customLink}}">{{customLinkText}}</a>
