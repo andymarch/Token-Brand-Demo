@@ -4,8 +4,19 @@
     "repository": "https://github.com/andymarch/Token-Brand-Demo",
     "logo": "https://www.okta.com/sites/all/themes/Okta/images/logos/developer/Dev_Logo-02_Large.png",
     "keywords": ["oauth", "oidc", "okta"],
-    "addons": [ "okta" ],
     "env": {
+          "OKTA_OAUTH2_ISSUER": {
+            "description": "The issuer URI of your authorization server, this can be either the tenant itself https://<yourname>.okta.com or a API Access Management authorization server https://<yourname>.okta.com/oauth2/<serverid>",
+            "value": ""
+        },
+        "OKTA_OAUTH2_CLIENT_ID_WEB": {
+          "description": "This client id of your OIDC application in Okta.",
+          "value": ""
+        },
+        "OKTA_OAUTH2_CLIENT_SECRET_WEB":{
+          "description": "The client secret of your OIDC application in Okta.",
+          "value": ""
+        },
         "SESSION_SECRET":{
             "description": "A secret key for session data.",
             "generator": "secret"
@@ -15,7 +26,7 @@
             "value": "openid profile"
         },
         "BASE_URI": {
-          "description": "The URI which will be used to host the application",
+          "description": "The URI which will be used to host the application, normally https://<your app name>.herokuapp.com",
           "value": ""
         },
         "BRAND": {

@@ -10,32 +10,20 @@ brand.
 # Getting Started
 
 ## Running on Heroku
-Deploying to Heroku is the fastest way to get started with this demo.
-
-### Fully supported with existing tenant
-* Create a new application in Heroku.
-* In the ```Deploy``` menu select either this repo or a fork of your own
-* Configure your Okta tenant according to [this
-guide](https://developer.okta.com/docs/guides/sign-into-web-app/nodeexpress/create-okta-application/),
-* Complete the [Configuration](#Configuration) in the Heroku app's ```Settings >> Config Vars```
-
-### Beta auto deploy with a new tenant
-
-To provision you an instance of Okta to use with the application we are using the
-[Beta Okta Heroku add on](https://devcenter.heroku.com/articles/okta).
-
->
->You will need a verified Heroku account to continue with this process, please create one [here](https://signup.heroku.com) if
->you do not already have one and make sure you are signed in.
->
->While verification will require you to enter payment information this
->demonstration only provisions free resources and will not cost you anything to
->run.
+Deploying to Heroku is the fastest way to get started with this demo. The button
+below will setup a Heroku app with this codebase, you will need to configure the
+application in Okta.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-* Give your application a name and press ```Deploy app```
-* Once deployment has completed press "View" to launch your application.
+* Give your application a name
+* Configure your a OIDC application in your Okta tenant according to [this
+  guide](https://developer.okta.com/docs/guides/sign-into-web-app/nodeexpress/create-okta-application/)
+  (if you don't have an Okta tenant sign up for free at
+  [developer.okta.com](https://developer.okta.com)), the redirect URI you will
+  need to https://<your app name>.herokuapp.com/authorization-code/callback
+ * Press ```Deploy app```
+
 
 ## Running Locally
 This is a lightweight express application once you have node installed on your
