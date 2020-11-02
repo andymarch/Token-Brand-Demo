@@ -12,13 +12,6 @@ brand.
 ## Running on Heroku
 Deploying to Heroku is the fastest way to get started with this demo.
 
-### Fully supported with existing tenant
-* Create a new application in Heroku.
-* In the ```Deploy``` menu select either this repo or a fork of your own
-* Configure your Okta tenant according to [this
-guide](https://developer.okta.com/docs/guides/sign-into-web-app/nodeexpress/create-okta-application/),
-* Complete the [Configuration](#Configuration) in the Heroku app's ```Settings >> Config Vars```
-
 ### Beta auto deploy with a new tenant
 
 To provision you an instance of Okta to use with the application we are using the
