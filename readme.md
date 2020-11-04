@@ -1,3 +1,7 @@
+> :warning: **Delegation Branch** : This branch integrates the [Okta Managed Access
+> Demonstration Service](https://github.com/andymarch/okta-managedaccess) and 
+> requires additional config of both that service and the tenant.
+
 # Token Brand Demo
 
 This demo sends the user directly to their IDP to authenticate and grant
@@ -53,6 +57,7 @@ SESSION_SECRET=*a random secret to protect the session*
 SCOPES=openid profile
 BASE_URI=http://localhost:3000
 TOKEN_AUD=api://default
+MANAGED_ACCESS_SERVICE_URI=Service URI for managed access service
 
 #OPTIONAL
 CUSTOM_LINK=https://google.com

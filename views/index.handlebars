@@ -1,7 +1,7 @@
 <div id="BrandLogo"></div>
 <div class="content">
     <div class="section">
-        <p>Welcome to {{brand}} {{user.given_name}}.</p>
+        <p>Welcome to {{brand}} {{user}}.</p>
 
         <p>Your identity provider has issued the following tokens.</p>
     </div>
@@ -30,6 +30,24 @@
     {{#if customLink}}
     <div class="section">
         <a href="{{customLink}}">{{customLinkText}}</a>
+    </div>
+    {{/if}}
+
+
+    {{#if authority}}
+    <div class="section">
+        <h1>Exercise authority</h1>
+        <p>You can assume the identity of the following users.</p>
+        <form action="/authority" method="post">
+            <select id="identity" name="identity" >
+            {{#each authority}}
+                <option value="{{this.id}}">{{this.displayName}}</option>
+            {{/each}}
+            </select>
+            <button type="submit">
+                Go
+            </button>
+        </form>
     </div>
     {{/if}}
 

@@ -2,12 +2,15 @@ require('dotenv').config()
 const express = require('express');
 const exphbs  = require('express-handlebars');
 const session = require("express-session");
-var createError = require('createerror');
-const ExpressOIDC = require("@okta/oidc-middleware").ExpressOIDC;
+const bodyParser = require('body-parser');
+const axios = require('axios');
+var auth = require('./auth.js')
+const qs = require('querystring')
 
 const PORT = process.env.PORT || "3000";
 
 const app = express();
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 var hbs = exphbs.create({
     // Specify helpers which are only registered on this instance.
@@ -36,15 +39,12 @@ app.use(session({
   resave: true
 }));
  
-let oidc = new ExpressOIDC({
-  issuer: process.env.OKTA_OAUTH2_ISSUER,
-  client_id: process.env.OKTA_OAUTH2_CLIENT_ID_WEB,
-  client_secret: process.env.OKTA_OAUTH2_CLIENT_SECRET_WEB,
-  appBaseUrl: process.env.BASE_URI,
-  scope: process.env.SCOPES
-});
-
-app.use(oidc.router);
+var auth = new auth();
+app.use(auth.setContext)
+app.use('/login', auth.handleLogin)
+app.use('/refresh',auth.handleRefresh)
+app.use('/reauth',auth.handleReauthorize)
+app.use('/authorization-code/callback',auth.handleCallback)
 
 app.use(async function (req,res,next){
   res.locals.styling = process.env.BRANDING_CSS
@@ -53,24 +53,67 @@ app.use(async function (req,res,next){
 })
   
 const router = express.Router();
-router.get("/",ensureAuthenticated(), (req, res, next) => {
-    res.render("index",{
-        user: req.userContext.userinfo,
-        idtoken: req.userContext.tokens.id_token,
-        accesstoken: req.userContext.tokens.access_token,
-        refreshtoken: req.userContext.tokens.refresh_token,
-        customLink: process.env.CUSTOM_LINK,
-        customLinkText: process.env.CUSTOM_LINK_TEXT
-       });
+router.get("/",auth.ensureAuthenticated(), async (req, res, next) => {
+  var user = req.userContext.claims.sub
+  if(req.userContext.claims.on_behalf){
+    user = user +" on behalf of "+req.userContext.claims.on_behalf_sub
+  }
+
+  var authority
+  try{
+    var resp = await axios.get(process.env.MANAGED_ACCESS_SERVICE_URI + '/agent',{headers:{Authorization: "Bearer "+req.userContext.tokens.access_token}})
+    authority = resp.data
+  }
+  catch(err){
+    console.log(err)  
+  }
+
+  res.render("index",{
+    user: user,
+    idtoken:req.session.user.id_token,
+    accesstoken: req.session.user.access_token,
+    refreshtoken: req.session.user.refresh_token,
+    customLink: process.env.CUSTOM_LINK,
+    customLinkText: process.env.CUSTOM_LINK_TEXT,
+    authority: authority
+    });
+
 });
+
+router.post("/authority", urlencodedParser, async(req,res,next) => {
+  try{
+        var response = await axios.post(process.env.MANAGED_ACCESS_SERVICE_URI + '/agent',
+        {
+          entityid: req.body.identity,
+        },{headers:{Authorization: "Bearer "+req.session.user.access_token}})
+        
+        console.log("called ")
+        var identifier = response.data.id
+        console.log(identifier)
+        if(req.session.user.refresh_token){
+          res.redirect('/refresh')
+        }
+        else{
+          var stateQuery = qs.stringify({
+            "state":identifier})
+          res.redirect('/reauth?'+stateQuery)
+          //refresh the token with redirect if refresh token is not available
+          //res.status(err.status || 500);
+          //res.render('error', { title: 'Get with redirect is not implemented.' });
+        }
+    }
+    catch(err){
+      console.log(err)
+      // set locals, only providing error in development
+      res.locals.message = err.message;
+      res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+      // render the error page
+      res.status(err.status || 500);
+      res.render('error', { title: 'Error' });
+    }
+})
 app.use(router)
-
-const OktaJwtVerifier = require('@okta/jwt-verifier');
-
-const oktaJwtVerifier = new OktaJwtVerifier({
-  issuer: process.env.OKTA_OAUTH2_ISSUER,
-  clientId: process.env.OKTA_OAUTH2_CLIENT_ID_WEB,
-});
 
 app.get("/logout", (req, res) => {
   if(req.userContext){
@@ -100,32 +143,4 @@ app.get("/logout", (req, res) => {
   }
   });
 
-oidc.on('ready', () => {
-  app.listen(PORT, () => console.log('App started.'+
-  ' Issuer: ' + process.env.OKTA_OAUTH2_ISSUER +
-  ' Client: ' + process.env.OKTA_OAUTH2_CLIENT_ID_WEB +
-  ' Scopes: ' + process.env.SCOPES +
-  ' Audience: ' + process.env.TOKEN_AUD));
-});
-
-oidc.on("error", err => {
-  console.error(err);
-});
-
-function ensureAuthenticated(){
-  return async (req, res, next) => {
-    if (req.isAuthenticated() && req.userContext != null) {
-      oktaJwtVerifier.verifyAccessToken(req.userContext.tokens.access_token,process.env.TOKEN_AUD)
-      .then(jwt => {
-        return next();
-      })
-      .catch(err => {
-        console.log(err)
-        res.redirect("/login")
-      });      
-    }
-    else{
-      res.redirect("/login")
-    }
-  }
-}
+  app.listen(PORT, () => console.log('App started.'));
