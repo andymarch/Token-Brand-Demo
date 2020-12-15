@@ -53,8 +53,13 @@ app.use(async function (req,res,next){
 })
   
 const router = express.Router();
-router.get("/",ensureAuthenticated(), (req, res, next) => {
-    res.render("index",{
+
+router.get("/", (req, res, next) => {
+  res.render("index",{issuer: process.env.OKTA_OAUTH2_ISSUER});
+});
+
+router.get("/welcome",ensureAuthenticated(), (req, res, next) => {
+    res.render("welcome",{
         user: req.userContext.userinfo,
         idtoken: req.userContext.tokens.id_token,
         accesstoken: req.userContext.tokens.access_token,

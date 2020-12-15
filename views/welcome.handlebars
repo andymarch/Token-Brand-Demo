@@ -1,0 +1,39 @@
+<div id="BrandLogo"></div>
+<div class="content">
+    <div class="section">
+        <p>Welcome to {{brand}} {{user.given_name}}.</p>
+
+        <p>Your identity provider has issued the following tokens.</p>
+    </div>
+
+    <div class="section">
+        <h1>ID Token</h1>
+        <p>The ID token describes you as a user to this application.</p>
+        <pre>{{jwt idtoken}}</pre>
+    </div>
+
+    <div class="section">
+        <h1>Access Token</h1>
+        <p>The access token describes which resources this application has access to
+        based on your identity and the grants your have provided.</p>
+        <pre>{{jwt accesstoken}}</pre>
+    </div>
+
+    {{#if refreshtoken}}
+        <div class="section">
+        <h1>Refresh Token</h1>
+        <p>This token allows this application to get further access tokens.</p>
+        <pre>{{refreshtoken}}</pre>
+    </div>
+    {{/if}}
+
+    {{#if customLink}}
+    <div class="section">
+        <a href="{{customLink}}"><button class="btn" type="button"><span>{{customLinkText}}</span></button></a>
+    </div>
+    {{/if}}
+
+    <div class="section">
+        <a href="/logout"><button class="btn" type="button"><span>Logout</span></button></a>
+    </div>
+</div>
