@@ -2,7 +2,6 @@ require('dotenv').config()
 const express = require('express');
 const exphbs  = require('express-handlebars');
 const session = require("express-session");
-var createError = require('createerror');
 const ExpressOIDC = require("@okta/oidc-middleware").ExpressOIDC;
 
 const PORT = process.env.PORT || "3000";
@@ -30,7 +29,6 @@ app.set('view engine', 'handlebars');
 app.use("/static", express.static("static"));
 
 app.use(session({
-  cookie: { httpOnly: true },
   secret: process.env.SESSION_SECRET,
   saveUninitialized: false,
   resave: true
@@ -117,9 +115,11 @@ oidc.on("error", err => {
   console.error(err);
 });
 
+//overload of OIDC ensureAuthenticated to enforce validation of the token audience
 function ensureAuthenticated(){
   return async (req, res, next) => {
-    if (req.isAuthenticated() && req.userContext != null) {
+    const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
+    if (isAuthenticated) {
       oktaJwtVerifier.verifyAccessToken(req.userContext.tokens.access_token,process.env.TOKEN_AUD)
       .then(jwt => {
         return next();
@@ -130,6 +130,9 @@ function ensureAuthenticated(){
       });      
     }
     else{
+      if (req.session) {
+        req.session.returnTo = req.originalUrl || req.url;
+      }
       res.redirect("/login")
     }
   }
