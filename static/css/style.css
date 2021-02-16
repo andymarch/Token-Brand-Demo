@@ -26,6 +26,7 @@ html, body, .viewport {
     background-image: url('/static/images/dev_logo.png');
     background-repeat: no-repeat;
     background-size: contain;
+    background-position: center;
 }
 
 .content{
