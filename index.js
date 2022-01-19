@@ -5,6 +5,7 @@ const session = require("express-session");
 const ExpressOIDC = require("@okta/oidc-middleware").ExpressOIDC;
 
 const PORT = process.env.PORT || "3000";
+const embedSignIn = process.env.EMBED_SIGN_IN || false
 
 const app = express();
 
@@ -34,12 +35,25 @@ app.use(session({
   resave: true
 }));
  
+var routes = {}
+if(embedSignIn){
+  routes.login = {
+    viewHandler: (req, res, next) => {
+      res.render('login', {
+        issuer: process.env.OKTA_OAUTH2_ISSUER,
+        csrfToken: req.csrfToken()
+      });
+    }
+  }
+}
+
 let oidc = new ExpressOIDC({
   issuer: process.env.OKTA_OAUTH2_ISSUER,
   client_id: process.env.OKTA_OAUTH2_CLIENT_ID_WEB,
   client_secret: process.env.OKTA_OAUTH2_CLIENT_SECRET_WEB,
   appBaseUrl: process.env.BASE_URI,
-  scope: process.env.SCOPES
+  scope: process.env.SCOPES,
+  routes: routes
 });
 
 app.use(oidc.router);
