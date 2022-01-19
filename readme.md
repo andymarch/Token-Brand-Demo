@@ -1,7 +1,7 @@
 # Token Brand Demo
 
-This demo sends the user directly to their IDP to authenticate and grant
-a set of scopes then displays the resulting tokens returned.
+This demo is a minimum viable application with allows the users to authenticate against the IDP
+and request a OAuth token with a set of scopes then displays the resulting tokens returned.
 
 This simple application can be used to demonstrate the configuration of OAuth
 authorization server especially injecting claims for a given user on a given
@@ -53,6 +53,7 @@ SESSION_SECRET=*a random secret to protect the session*
 SCOPES=openid profile
 BASE_URI=http://localhost:3000
 TOKEN_AUD=api://default
+EMBED_SIGN_IN=false
 
 #OPTIONAL
 CUSTOM_LINK=https://google.com
@@ -61,6 +62,11 @@ CUSTOM_LINK_TEXT=Let me google that
 #Only needed locally
 PORT=3000
 ```
+
+### Using embedded widget
+
+To enable the embedded widget switch the value of ```EMBED_SIGN_IN``` to ```true```. This then uses the embedded Okta Signin Widget on the /login route rather than redirecting to the IDP. For this to function you will need to add the value you declared in ```BASE_URI``` as a CORS permitted endpoint in Okta, [see docs](https://developer.okta.com/docs/guides/enable-cors/main/#grant-cross-origin-access-to-websites).
+
 
 ## Customising the branding
 
