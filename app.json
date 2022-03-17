@@ -44,7 +44,7 @@
         },
         "EMBED_SIGN_IN": {
           "description": "Enable the embedded signin widget on the login route.",
-          "value": false
+          "value": ""
         }
     },
     "success_url": "/"
