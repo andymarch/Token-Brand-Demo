@@ -42,9 +42,9 @@
           "description": "The AUD claim of the user token.",
           "value": "api://default"
         },
-        "EMBED_SIGN_IN": {
-          "description": "Enable the embedded signin widget on the login route.",
-          "value": false
+        "SIGN_IN": {
+          "description": "Enable the embedded signin widget on the login route, accepted values are 'embed' or 'redirect'.",
+          "value": "redirect"
         }
     },
     "success_url": "/"

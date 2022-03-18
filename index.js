@@ -5,7 +5,7 @@ const session = require("express-session");
 const ExpressOIDC = require("@okta/oidc-middleware").ExpressOIDC;
 
 const PORT = process.env.PORT || "3000";
-const embedSignIn = process.env.EMBED_SIGN_IN || false
+const SIGN_IN = process.env.SIGN_IN || "redirect"
 
 const app = express();
 
@@ -36,7 +36,7 @@ app.use(session({
 }));
  
 var routes = {}
-if(embedSignIn){
+if(SIGN_IN === "embed"){
   routes.login = {
     viewHandler: (req, res, next) => {
       res.render('login', {
@@ -130,6 +130,7 @@ oidc.on("error", err => {
 });
 
 //overload of OIDC ensureAuthenticated to enforce validation of the token audience
+//note that this would normally be done by the backend consuming the token not the client
 function ensureAuthenticated(){
   return async (req, res, next) => {
     const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
