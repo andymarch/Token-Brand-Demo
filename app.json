@@ -38,10 +38,6 @@
           "value": "",
           "required": false
         },
-        "TOKEN_AUD": {
-          "description": "The AUD claim of the user token.",
-          "value": "api://default"
-        },
         "SIGN_IN": {
           "description": "Enable the embedded signin widget on the login route, accepted values are 'embed' or 'redirect'.",
           "value": "redirect"

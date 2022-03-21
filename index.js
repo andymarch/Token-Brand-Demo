@@ -3,6 +3,7 @@ const express = require('express');
 const exphbs  = require('express-handlebars');
 const session = require("express-session");
 const ExpressOIDC = require("@okta/oidc-middleware").ExpressOIDC;
+const passport = require('passport');
 
 const PORT = process.env.PORT || "3000";
 const SIGN_IN = process.env.SIGN_IN || "redirect"
@@ -24,6 +25,7 @@ var hbs = exphbs.create({
         }
     }
 });
+
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
@@ -35,7 +37,19 @@ app.use(session({
   resave: true
 }));
  
-var routes = {}
+var routes = {
+  loginCallback: {
+    handler: (req, res, next) => {
+        //using a custom handler here means that errors are shown with custom error handler rather than plaintext
+        const redirectOptions = { 
+          successReturnToOrRedirect: '/welcome',
+          successRedirect: '/welcome'
+        };
+        passport.authenticate('oidc', redirectOptions);
+        next()
+      }   
+  }
+}
 if(SIGN_IN === "embed"){
   routes.login = {
     viewHandler: (req, res, next) => {
@@ -70,23 +84,33 @@ router.get("/", (req, res, next) => {
   res.render("index",{issuer: process.env.OKTA_OAUTH2_ISSUER});
 });
 
-router.get("/welcome",ensureAuthenticated(), (req, res, next) => {
-    res.render("welcome",{
-        user: req.userContext.userinfo,
-        idtoken: req.userContext.tokens.id_token,
-        accesstoken: req.userContext.tokens.access_token,
-        refreshtoken: req.userContext.tokens.refresh_token,
-        customLink: process.env.CUSTOM_LINK,
-        customLinkText: process.env.CUSTOM_LINK_TEXT
-       });
+router.get("/welcome",oidc.ensureAuthenticated(), (req, res, next) => {
+  res.render("welcome",{
+      user: req.userContext.userinfo,
+      idtoken: req.userContext.tokens.id_token,
+      accesstoken: req.userContext.tokens.access_token,
+      refreshtoken: req.userContext.tokens.refresh_token,
+      customLink: process.env.CUSTOM_LINK,
+      customLinkText: process.env.CUSTOM_LINK_TEXT
+      });
 });
 app.use(router)
 
-const OktaJwtVerifier = require('@okta/jwt-verifier');
-
-const oktaJwtVerifier = new OktaJwtVerifier({
-  issuer: process.env.OKTA_OAUTH2_ISSUER,
-  clientId: process.env.OKTA_OAUTH2_CLIENT_ID_WEB,
+router.get("/error", (req, res, next) => {
+  var title = 'Error'
+  var msg =  "Something failed"
+  var detail
+  if(req.query.error_description){
+    msg = req.query.error_description
+  }
+  if(err){
+    detail = err
+  }
+  res.render("error",{
+    title: title,
+    msg: msg,
+    detail: detail
+  })
 });
 
 app.get("/logout", (req, res) => {
@@ -115,40 +139,46 @@ app.get("/logout", (req, res) => {
   else {
     res.redirect("/")
   }
-  });
+});
+
+app.use((err, req, res, next) => {
+  var title = 'Error'
+  var msg =  "Somethign failed"
+  var detail
+  if(req.query.error_description){
+    msg = req.query.error_description
+  }
+  if(err){
+    detail = err
+  }
+  res.render("error",{
+    title: title,
+    msg: msg,
+    detail: detail
+  })
+})
+
+// An error occurred while setting up OIDC, during token revokation, or during post-logout handling
+oidc.on('error', err => {
+  var title = 'Error'
+  var msg =  "Something failed"
+  var detail
+
+  if(err){
+    detail = err
+  }
+  res.render("error",{
+    title: title,
+    msg: msg,
+    detail: detail
+  })
+
+});
 
 oidc.on('ready', () => {
   app.listen(PORT, () => console.log('App started.'+
   ' Issuer: ' + process.env.OKTA_OAUTH2_ISSUER +
   ' Client: ' + process.env.OKTA_OAUTH2_CLIENT_ID_WEB +
-  ' Scopes: ' + process.env.SCOPES +
-  ' Audience: ' + process.env.TOKEN_AUD));
-});
+  ' Scopes: ' + process.env.SCOPES));
+})
 
-oidc.on("error", err => {
-  console.error(err);
-});
-
-//overload of OIDC ensureAuthenticated to enforce validation of the token audience
-//note that this would normally be done by the backend consuming the token not the client
-function ensureAuthenticated(){
-  return async (req, res, next) => {
-    const isAuthenticated = req.isAuthenticated && req.isAuthenticated();
-    if (isAuthenticated) {
-      oktaJwtVerifier.verifyAccessToken(req.userContext.tokens.access_token,process.env.TOKEN_AUD)
-      .then(jwt => {
-        return next();
-      })
-      .catch(err => {
-        console.log(err)
-        res.redirect("/login")
-      });      
-    }
-    else{
-      if (req.session) {
-        req.session.returnTo = req.originalUrl || req.url;
-      }
-      res.redirect("/login")
-    }
-  }
-}
